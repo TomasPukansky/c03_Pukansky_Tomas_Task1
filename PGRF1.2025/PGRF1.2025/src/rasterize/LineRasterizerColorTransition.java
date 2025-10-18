@@ -13,27 +13,116 @@ public class LineRasterizerColorTransition extends LineRasterizer {
     @Override
     public void rasterize(int x1, int y1, int x2, int y2) {
         // TODO: pozor na dělení nulou
-        float k = (y2 - y1) / (float) (x2 - x1);
-        float q = y1 - k * x1;
 
-        // TODO: x1 může být větší než x2
-
+        if (x1 == x2 && y1 == y2) {
+            raster.setPixel(x1, y1, Color.RED.getRGB());
+            return;
+        }
         Color c1 = Color.RED;
         Color c2 = Color.GREEN;
 
-        float[] colorComponentsC1 = c1.getColorComponents(null);
+        if (x1 == x2) {
+            int startY = Math.min(y1, y2);
+            int endY = Math.max(y1, y2);
 
-        for (int x = x1; x <= x2; x++) {
-            // t = odečtu minimum, dělím rozsahem
 
-            for (int i = 0; i < 3; i++) {
-                // newColors[i] =
+            for (int y = startY; y <= endY; y++) {
+                raster.setPixel(x1, y, c1.getRGB());
             }
-
-            int y = Math.round(k * x + q);
-            raster.setPixel(x, y, 0xff0000);
+            return;
         }
 
-        // TODO: dokončit algoritmus
+
+        float k = (y2 - y1) / (float) (x2 - x1);
+        float q = y1 - k * x1;
+
+        int originalX1 = x1;
+        int originalX2 = x2;
+        int totalXRange = Math.abs(x2 - x1);
+
+        float[] colorComponentsC1 = c1.getColorComponents(null);
+        float[] colorComponentsC2 = c2.getColorComponents(null);
+
+        // TODO: x1 může být větší než x2
+        if (Math.abs(k) <= 1) {
+            // Iterate over x axis
+            boolean swapped = false;
+            if (x1 > x2) {
+                int temp = x1;
+                x1 = x2;
+                x2 = temp;
+
+                temp = y1;
+                y1 = y2;
+                y2 = temp;
+                swapped = true;
+            }
+
+
+            for (int x = x1; x <= x2; x++) {
+                // Calculate interpolation parameter t based on original x coordinates
+                float t;
+                if (swapped) {
+                    t = (originalX1 - x) / (float) totalXRange;
+                } else {
+                    t = (x - originalX1) / (float) totalXRange;
+                }
+
+                // Interpolate color
+                int color = interpolateColor(c1, c2, t);
+
+                int y = Math.round(k * x + q);
+                raster.setPixel(x, y, color);
+            }
+        } else {
+            boolean swapped = false;
+            if (y1 > y2) {
+                int temp = x1;
+                x1 = x2;
+                x2 = temp;
+
+                temp = y1;
+                y1 = y2;
+                y2 = temp;
+                swapped = true;
+            }
+
+
+            for (int y = y1; y <= y2; y++) {
+                int x = Math.round((y - q) / k);
+
+                // Calculate interpolation parameter t based on original x coordinates
+                float t;
+                if (swapped) {
+                    t = (originalX1 - x) / (float) totalXRange;
+                } else {
+                    t = (x - originalX1) / (float) totalXRange;
+                }
+
+                // Interpolate color
+                int color = interpolateColor(c1, c2, t);
+
+                raster.setPixel(x, y, color);
+
+                // TODO: dokončit algoritmus
+            }
+
+        }
+    }
+
+    private int interpolateColor(Color c1, Color c2, float t) {
+        // Get RGB [0.0 - 1.0]
+        float[] components1 = c1.getColorComponents(null);
+        float[] components2 = c2.getColorComponents(null);
+
+        // Interpolate kazdeko componentu: newColor = c1 + t * (c2 - c1)
+        float[] newColors = new float[3];
+        for (int i = 0; i < 3; i++) {
+            newColors[i] = components1[i] + t * (components2[i] - components1[i]);
+        }
+
+        // spät na RGB integer
+        Color interpolatedColor = new Color(newColors[0], newColors[1], newColors[2]);
+        return interpolatedColor.getRGB();
     }
 }
