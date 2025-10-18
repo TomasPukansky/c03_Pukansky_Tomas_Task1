@@ -4,6 +4,7 @@ package controller;
 import model.Line;
 import model.Polygon;
 import rasterize.LineRasterizer;
+import rasterize.LineRasterizerColorTransition;
 import rasterize.LineRasterizerGraphics;
 import rasterize.LineRasterizerTrivial;
 import view.Panel;
@@ -115,6 +116,17 @@ public class Controller2D {
                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                    firstPoint = null;
                    currentPoint = null;
+                   drawScene();
+               }
+               // Switch to trivial algorithm with '1'
+               if (e.getKeyCode() == KeyEvent.VK_1) {
+                   lineRasterizer = new LineRasterizerTrivial(panel.getRaster());
+                   drawScene();
+               }
+
+               // Switch to color transition with '2'
+               if (e.getKeyCode() == KeyEvent.VK_2) {
+                   lineRasterizer = new LineRasterizerColorTransition(panel.getRaster());
                    drawScene();
                }
 

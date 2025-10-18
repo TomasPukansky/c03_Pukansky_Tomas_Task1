@@ -39,9 +39,12 @@ public class LineRasterizerColorTransition extends LineRasterizer {
         int originalX1 = x1;
         int originalX2 = x2;
         int totalXRange = Math.abs(x2 - x1);
-
-        float[] colorComponentsC1 = c1.getColorComponents(null);
-        float[] colorComponentsC2 = c2.getColorComponents(null);
+        //safety check
+        if (totalXRange == 0) {
+            totalXRange = 1;
+        }
+//        float[] colorComponentsC1 = c1.getColorComponents(null);
+//        float[] colorComponentsC2 = c2.getColorComponents(null);
 
         // TODO: x1 může být větší než x2
         if (Math.abs(k) <= 1) {
@@ -111,6 +114,8 @@ public class LineRasterizerColorTransition extends LineRasterizer {
     }
 
     private int interpolateColor(Color c1, Color c2, float t) {
+        //maxnutie t na 0 az 1 aby nebol float point error
+        t = Math.max(0.0f, Math.min(1.0f, t));
         // Get RGB [0.0 - 1.0]
         float[] components1 = c1.getColorComponents(null);
         float[] components2 = c2.getColorComponents(null);
@@ -119,7 +124,9 @@ public class LineRasterizerColorTransition extends LineRasterizer {
         float[] newColors = new float[3];
         for (int i = 0; i < 3; i++) {
             newColors[i] = components1[i] + t * (components2[i] - components1[i]);
+            newColors[i] = Math.max(0.0f, Math.min(1.0f, newColors[i]));
         }
+
 
         // spät na RGB integer
         Color interpolatedColor = new Color(newColors[0], newColors[1], newColors[2]);
