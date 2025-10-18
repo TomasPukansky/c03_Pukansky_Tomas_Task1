@@ -9,11 +9,18 @@ public class LineRasterizerTrivial extends LineRasterizer {
         super(raster);
 
     }
-
+    //Trivialny algoritmus
+    //Používa rovnicu y = k*x + q (alebo x = (y-q)/k pre strmé línie)
+    // Jednoduchý, ale pomalší algoritmus – vypočíta y (alebo x) pre každý pixel
+    // Možnosť generovať reálne súradnice
+    // Používa desatinné (float) čísla
     @Override
     public void rasterize(int x1, int y1, int x2, int y2) {
         //TODO: pozor na delenie nulou
-        //
+
+
+
+        //zvysla usecka delenie nulou
         if (x1 == x2) {
             int startY = Math.min(y1, y2);
             int endY = Math.max(y1, y2);
@@ -23,17 +30,20 @@ public class LineRasterizerTrivial extends LineRasterizer {
             return;
         }
 
+        // degenerovana usecka start sa rovna koncu
+        if (x1 == x2 && y1 == y2) {
+            raster.setPixel(x1, y1, 0xff0000);
+            return;
+        }
+
         float k = (y2 - y1) / (float) (x2 - x1);
         float q = y1 - k * x1;
 
-        Color c1 = Color.RED;
-        Color c2 = Color.BLUE;
-        c1.getColorComponents(null);
+
 
         //TODO: napisat if x1>x2
-
+        //
         if (Math.abs(k) <= 1) {
-            // Iterate over x axis
             if (x1 > x2) {
                 int temp = x1;
                 x1 = x2;
