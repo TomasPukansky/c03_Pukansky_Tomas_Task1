@@ -1,6 +1,7 @@
 package model;
 
 import rasterize.LineRasterizer;
+import rasterize.PolygonRasterizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 public class Polygon {
     private final List<Point> points;
     private LineRasterizer rasterizer;
+
 
     public Polygon(){
         this.points = new ArrayList<>();
@@ -35,11 +37,13 @@ public class Polygon {
     //seter pre rasterize vola sa ked je polygon dokonceny
     public void setRasterizer(LineRasterizer rasterizer) {
         this.rasterizer = rasterizer;
+
     }
 
     public LineRasterizer getRasterizer() {
         return rasterizer;
     }
+
 
     public List<Line> getEdges() {
         List<Line> edges = new ArrayList<>();
@@ -47,6 +51,7 @@ public class Polygon {
         if (points.size() < 2) {
             return edges;
         }
+
 
         for (int i = 0; i < points.size() - 1; i++) {
             Point p1 = points.get(i);

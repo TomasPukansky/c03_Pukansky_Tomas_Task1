@@ -5,21 +5,22 @@ import model.Point;
 
 public class PolygonRasterizer {
 
-    int size = 0;
+
     private LineRasterizer  lineRasterizer;
-    private PolygonRasterizer(LineRasterizer lineRasterizer){
+    public PolygonRasterizer(LineRasterizer lineRasterizer){
         this.lineRasterizer = lineRasterizer;
     };
 
     public void rasterize(Polygon polygon){
-       //kontrola ci mame aspon 3 pointy,,,,, ak na 2 pointy osetrit ze usecku nevykresli dvakrat
+       //kontrola ci mame aspon 3 pointy, ak na 2 pointy osetrit ze usecku nevykresli dvakrat
 
-       //forcyklus for i=0,i<size,i++
-        // i=0  p0 -> i+1=1 p1
+       if (polygon.getSize() < 3) {
+            return; // Not enough points for a polygon
+        }
 
         for (int i = 0; i < polygon.getSize(); i++){
-            int indexA =1;
-            int indexB= i+1;
+            int indexA =i;
+            int indexB = (i + 1) % polygon.getSize();
 
 
             // If indexB se rovná polygon.getSize
@@ -27,7 +28,11 @@ public class PolygonRasterizer {
 
             Point pA = polygon.getPoint(indexA);
             Point pB = polygon.getPoint(indexB);
-            if(i==4){
+
+            lineRasterizer.rasterize(
+                    pA.getX(), pA.getY(),
+                    pB.getX(), pB.getY()
+            );
 
 
                 //lineRasterizer.rasterize
@@ -38,7 +43,7 @@ public class PolygonRasterizer {
 
 
 
-    }
+
 
     public void setLineRasterizer(LineRasterizer lineRasterizer) {
         this.lineRasterizer = lineRasterizer;

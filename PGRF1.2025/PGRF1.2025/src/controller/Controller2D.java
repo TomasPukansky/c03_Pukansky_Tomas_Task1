@@ -203,13 +203,15 @@ public class Controller2D {
                    if (currentPoint != null) {
                        drawScene();
                    }
-                   System.out.println("Shift ON - Snap to 45° angles");
+                   
                }
                 // clear key press-C
                if (e.getKeyCode() == KeyEvent.VK_C) {
                    lines.clear();
+                   polygons.clear();
                    firstPoint = null;
                    currentPoint = null;
+                   currentPolygonPoints.clear();
                    drawScene();
                }
                // zrusit momentalne kreslenu linku s ESC
@@ -252,8 +254,8 @@ public class Controller2D {
                        // DEBUG: Check total polygons
                        System.out.println("Total polygons: " + polygons.size());
 
-
-                       currentPolygonPoints = new ArrayList<>(); // novy lin miesto clear
+                       // Clear current polygon points for next polygon
+                       currentPolygonPoints = new ArrayList<>();
                        currentPoint = null;
                        drawScene();
                    } else if (polygonMode) {
@@ -290,20 +292,8 @@ public class Controller2D {
                    panel.repaint();
                }
            }
-           @Override
-           public void keyReleased(KeyEvent e) {
-               if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                   shiftPressed = false;
-                   // Redraw to show free preview immediately
-                   if (currentPoint != null) {
-                       drawScene();
-                   }
-                   System.out.println("Shift OFF - Free drawing");
-               }
-           }
        });
     }
-
     private void drawScene() {
         panel.getRaster().clear();
 
@@ -320,10 +310,10 @@ public class Controller2D {
             }
         }
 
-
+        // Draw all completed polygons/debug
         System.out.println("Drawing " + polygons.size() + " polygons"); // DEBUG
         for (Polygon polygon : polygons) {
-            // Get all edges of the polygon as Line objects
+
             List<Line> edges = polygon.getEdges();
 
             System.out.println("  Polygon has " + polygon.getSize() + " points and " + edges.size() + " edges"); // DEBUG
