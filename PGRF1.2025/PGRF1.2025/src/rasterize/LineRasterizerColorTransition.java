@@ -24,10 +24,13 @@ public class LineRasterizerColorTransition extends LineRasterizer {
         if (x1 == x2) {
             int startY = Math.min(y1, y2);
             int endY = Math.max(y1, y2);
-
+            int totalYRange = Math.abs(y2 - y1);
+            if (totalYRange == 0) totalYRange = 1;
 
             for (int y = startY; y <= endY; y++) {
-                raster.setPixel(x1, y, c1.getRGB());
+                float t = (y - startY) / (float) totalYRange;
+                int color = interpolateColor(c1, c2, t);
+                raster.setPixel(x1, y, color);
             }
             return;
         }
@@ -37,11 +40,15 @@ public class LineRasterizerColorTransition extends LineRasterizer {
         float q = y1 - k * x1;
 
         int originalX1 = x1;
-        int originalX2 = x2;
+        int originalY1 = y1;
         int totalXRange = Math.abs(x2 - x1);
+        int totalYRange = Math.abs(y2 - y1);
         //safety check
         if (totalXRange == 0) {
             totalXRange = 1;
+        }
+        if (totalYRange == 0) {
+            totalYRange = 1;
         }
 //        float[] colorComponentsC1 = c1.getColorComponents(null);
 //        float[] colorComponentsC2 = c2.getColorComponents(null);
@@ -94,20 +101,18 @@ public class LineRasterizerColorTransition extends LineRasterizer {
             for (int y = y1; y <= y2; y++) {
                 int x = Math.round((y - q) / k);
 
-                // Calculate interpolation parameter t based on original x coordinates
+                // Calculate interpolation parameter t based on y coordinates
                 float t;
                 if (swapped) {
-                    t = (originalX1 - x) / (float) totalXRange;
+                    t = (originalY1 - y) / (float) totalYRange;
                 } else {
-                    t = (x - originalX1) / (float) totalXRange;
+                    t = (y - originalY1) / (float) totalYRange;
                 }
 
                 // Interpolate color
                 int color = interpolateColor(c1, c2, t);
 
                 raster.setPixel(x, y, color);
-
-                // TODO: dokončit algoritmus
             }
 
         }

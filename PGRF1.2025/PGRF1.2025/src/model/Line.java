@@ -1,12 +1,15 @@
 package model;
 
 
+import rasterize.LineRasterizer;
 
 public class Line {
     private final int y1;
     private final int x1;
     private final int y2;
     private final int x2;
+    private LineRasterizer rasterizer;
+
      public Line(int y1, int x1, int y2, int x2) {
          this.y1 = y1;
          this.x1 = x1;
@@ -36,5 +39,12 @@ public class Line {
 
     public int getX2() {
         return x2;
+    }
+
+    public void setRasterizer(LineRasterizer rasterizer) {
+        this.rasterizer = rasterizer;
+    }
+    public LineRasterizer getRasterizer() {
+        return rasterizer;
     }
 }

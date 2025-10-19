@@ -64,6 +64,9 @@ public class Controller2D {
                }
                 //druhy klik
                Line line = new Line(firstPoint, new Point(e.getX(), e.getY()));
+
+               line.setRasterizer(lineRasterizer);
+
                lines.add(line);
                firstPoint = null;
                currentPoint = null;
@@ -152,9 +155,18 @@ public class Controller2D {
     private void drawScene() {
         panel.getRaster().clear();
 
+        // miesto pouzivania rasterizeru prevsetky lines
+        // kazda linka pouziva svoj vlastny rasterizer ktory sa uklada ked sa vytvori
 
-        for (Line line : lines)
-            lineRasterizer.rasterize(line);
+        for (Line line : lines) {
+
+            if (line.getRasterizer() != null) {
+                line.getRasterizer().rasterize(line);
+            } else {
+                // Fallback: ak ziaden rasterizer nebol nastaven, pouzijeme momentalny
+                lineRasterizer.rasterize(line);
+            }
+        }
 
         if (firstPoint != null && currentPoint != null) {
             lineRasterizer.rasterize(
